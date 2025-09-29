@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4AE88FC12E8AA73100676F2E /* MaruBuri-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4AE88FBC2E8AA73100676F2E /* MaruBuri-Light.otf */; };
+		4AE88FC22E8AA73100676F2E /* MaruBuri-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4AE88FBD2E8AA73100676F2E /* MaruBuri-SemiBold.otf */; };
+		4AE88FC32E8AA73100676F2E /* MaruBuri-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4AE88FBE2E8AA73100676F2E /* MaruBuri-Regular.otf */; };
+		4AE88FC42E8AA73100676F2E /* MaruBuri-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4AE88FBF2E8AA73100676F2E /* MaruBuri-Bold.otf */; };
+		4AE88FC52E8AA73100676F2E /* MaruBuri-ExtraLight.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4AE88FC02E8AA73100676F2E /* MaruBuri-ExtraLight.otf */; };
+		4AE88FCA2E8AA73D00676F2E /* MaruBuri-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4AE88FC62E8AA73D00676F2E /* MaruBuri-ExtraLight.ttf */; };
+		4AE88FCB2E8AA73D00676F2E /* MaruBuri-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4AE88FC72E8AA73D00676F2E /* MaruBuri-SemiBold.ttf */; };
+		4AE88FCC2E8AA73D00676F2E /* MaruBuri-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4AE88FC82E8AA73D00676F2E /* MaruBuri-Light.ttf */; };
+		4AE88FCD2E8AA73D00676F2E /* MaruBuri-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4AE88FC92E8AA73D00676F2E /* MaruBuri-Bold.ttf */; };
 		A1234567890ABCDEF1234567 /* AssetRankingApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF1234566 /* AssetRankingApp.swift */; };
 		A1234567890ABCDEF1234569 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF1234568 /* ContentView.swift */; };
 		A1234567890ABCDEF123456B /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF123456A /* AppTheme.swift */; };
@@ -31,6 +40,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4AE88FBC2E8AA73100676F2E /* MaruBuri-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "MaruBuri-Light.otf"; path = "../fonts/마루누리/OTF/MaruBuri-Light.otf"; sourceTree = "<group>"; };
+		4AE88FBD2E8AA73100676F2E /* MaruBuri-SemiBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "MaruBuri-SemiBold.otf"; path = "../fonts/마루누리/OTF/MaruBuri-SemiBold.otf"; sourceTree = "<group>"; };
+		4AE88FBE2E8AA73100676F2E /* MaruBuri-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "MaruBuri-Regular.otf"; path = "../fonts/마루누리/OTF/MaruBuri-Regular.otf"; sourceTree = "<group>"; };
+		4AE88FBF2E8AA73100676F2E /* MaruBuri-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "MaruBuri-Bold.otf"; path = "../fonts/마루누리/OTF/MaruBuri-Bold.otf"; sourceTree = "<group>"; };
+		4AE88FC02E8AA73100676F2E /* MaruBuri-ExtraLight.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "MaruBuri-ExtraLight.otf"; path = "../fonts/마루누리/OTF/MaruBuri-ExtraLight.otf"; sourceTree = "<group>"; };
+		4AE88FC62E8AA73D00676F2E /* MaruBuri-ExtraLight.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "MaruBuri-ExtraLight.ttf"; path = "../fonts/마루누리/TTF/MaruBuri-ExtraLight.ttf"; sourceTree = "<group>"; };
+		4AE88FC72E8AA73D00676F2E /* MaruBuri-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "MaruBuri-SemiBold.ttf"; path = "../fonts/마루누리/TTF/MaruBuri-SemiBold.ttf"; sourceTree = "<group>"; };
+		4AE88FC82E8AA73D00676F2E /* MaruBuri-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "MaruBuri-Light.ttf"; path = "../fonts/마루누리/TTF/MaruBuri-Light.ttf"; sourceTree = "<group>"; };
+		4AE88FC92E8AA73D00676F2E /* MaruBuri-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "MaruBuri-Bold.ttf"; path = "../fonts/마루누리/TTF/MaruBuri-Bold.ttf"; sourceTree = "<group>"; };
 		A1234567890ABCDEF1234563 /* AssetRanking.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AssetRanking.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1234567890ABCDEF1234566 /* AssetRankingApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetRankingApp.swift; sourceTree = "<group>"; };
 		A1234567890ABCDEF1234568 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -57,6 +75,15 @@
 		A1234567890ABCDEF123455A = {
 			isa = PBXGroup;
 			children = (
+				4AE88FC92E8AA73D00676F2E /* MaruBuri-Bold.ttf */,
+				4AE88FC62E8AA73D00676F2E /* MaruBuri-ExtraLight.ttf */,
+				4AE88FC82E8AA73D00676F2E /* MaruBuri-Light.ttf */,
+				4AE88FC72E8AA73D00676F2E /* MaruBuri-SemiBold.ttf */,
+				4AE88FBF2E8AA73100676F2E /* MaruBuri-Bold.otf */,
+				4AE88FC02E8AA73100676F2E /* MaruBuri-ExtraLight.otf */,
+				4AE88FBC2E8AA73100676F2E /* MaruBuri-Light.otf */,
+				4AE88FBE2E8AA73100676F2E /* MaruBuri-Regular.otf */,
+				4AE88FBD2E8AA73100676F2E /* MaruBuri-SemiBold.otf */,
 				A1234567890ABCDEF1234565 /* AssetRanking */,
 				A1234567890ABCDEF1234564 /* Products */,
 				A29BEA693ED3D6C3A522C59C /* Pods */,
@@ -153,6 +180,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4AE88FCA2E8AA73D00676F2E /* MaruBuri-ExtraLight.ttf in Resources */,
+				4AE88FCB2E8AA73D00676F2E /* MaruBuri-SemiBold.ttf in Resources */,
+				4AE88FCC2E8AA73D00676F2E /* MaruBuri-Light.ttf in Resources */,
+				4AE88FCD2E8AA73D00676F2E /* MaruBuri-Bold.ttf in Resources */,
+				4AE88FC12E8AA73100676F2E /* MaruBuri-Light.otf in Resources */,
+				4AE88FC22E8AA73100676F2E /* MaruBuri-SemiBold.otf in Resources */,
+				4AE88FC32E8AA73100676F2E /* MaruBuri-Regular.otf in Resources */,
+				4AE88FC42E8AA73100676F2E /* MaruBuri-Bold.otf in Resources */,
+				4AE88FC52E8AA73100676F2E /* MaruBuri-ExtraLight.otf in Resources */,
 				A1234567890ABCDEF1234575 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -316,6 +352,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -351,6 +388,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

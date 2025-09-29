@@ -67,5 +67,18 @@
 	</array>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-4376736198197573~4581439845</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>MaruBuri-Light.ttf</string>
+		<string>MaruBuri-Regular.ttf</string>
+		<string>MaruBuri-Bold.ttf</string>
+		<string>MaruBuri-SemiBold.ttf</string>
+		<string>MaruBuri-ExtraLight.ttf</string>
+		<string>MaruBuri-Light.otf</string>
+		<string>MaruBuri-Regular.otf</string>
+		<string>MaruBuri-Bold.otf</string>
+		<string>MaruBuri-SemiBold.otf</string>
+		<string>MaruBuri-ExtraLight.otf</string>
+	</array>
 </dict>
 </plist>

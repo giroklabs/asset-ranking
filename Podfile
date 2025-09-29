@@ -6,6 +6,6 @@ target 'AssetRanking' do
   use_frameworks!
 
   # Pods for AssetRanking
-  # pod 'Google-Mobile-Ads-SDK', '~> 10.0'
+  pod 'Google-Mobile-Ads-SDK', '~> 10.0'
 
 end

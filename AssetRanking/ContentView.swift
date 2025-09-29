@@ -7,12 +7,25 @@ struct ContentView: View {
     @State private var rankingResult: AssetRankingResult?
     @State private var isKeyboardVisible = false
     
+    // 한국어 단위 변환된 금액
+    private var formattedKoreanAmount: String {
+        let cleanedInput = netWorth.replacingOccurrences(of: ",", with: "").replacingOccurrences(of: " ", with: "")
+        guard let amount = Int(cleanedInput), amount > 0 else {
+            return ""
+        }
+        return amount.formattedKorean
+    }
+    
     var body: some View {
         NavigationView {
             ZStack(alignment: .top) {
                 // 배경 그라데이션
                 AppTheme.backgroundGradient
                     .ignoresSafeArea()
+                    .onAppear {
+                        // 폰트 디버그 정보 출력 (README 권장)
+                        AppTheme.debugFontInfo()
+                    }
                 
                 VStack(spacing: 0) {
                     TopSeparator()
@@ -24,8 +37,6 @@ struct ContentView: View {
                             
                             // 앱 타이틀
                             VStack(spacing: 16) {
-                                AppTitleView(baseSize: 32)
-                                
                                 Text("나의 자산 순위를 확인해보세요")
                                     .font(AppTheme.getFont(size: 18, weight: .light))
                                     .foregroundColor(.secondary)
@@ -68,9 +79,16 @@ struct ContentView: View {
                                                 .stroke(Color(.systemGray4), lineWidth: 0.5)
                                         )
                                         
-                                        Text("예: 1억원 = 100,000,000")
-                                            .font(AppTheme.getFont(size: 12, weight: .light))
-                                            .foregroundColor(.secondary)
+                                        // 한국어 단위 변환 표시
+                                        if !netWorth.isEmpty {
+                                            HStack {
+                                                Spacer()
+                                                Text(formattedKoreanAmount)
+                                                    .font(AppTheme.getFont(size: 16, weight: .medium))
+                                                    .foregroundColor(.blue)
+                                                    .padding(.top, 8)
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -78,27 +96,21 @@ struct ContentView: View {
                             
                             // 확인 버튼
                             Button(action: {
+                                if netWorth.isEmpty {
+                                    return
+                                }
                                 checkRanking()
                             }) {
-                                HStack {
-                                    if isLoading {
-                                        ProgressView()
-                                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                            .scaleEffect(0.8)
-                                    } else {
-                                        Image(systemName: "chart.bar.fill")
-                                            .font(.title3)
-                                    }
-                                    Text("순위 확인하기")
-                                        .font(AppTheme.getFont(size: 18, weight: .semibold))
-                                }
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 56)
-                                .background(AppTheme.primaryGradient)
-                                .cornerRadius(AppTheme.cornerRadius)
+                                Text("순위 확인하기")
+                                    .font(AppTheme.getFont(size: 18, weight: .semibold))
+                                    .foregroundColor(.white)
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 56)
+                                    .background(AppTheme.primaryGradient)
+                                    .cornerRadius(AppTheme.cornerRadius)
                             }
-                            .disabled(netWorth.isEmpty || isLoading)
+                            .disabled(isLoading)
+                            .opacity(isLoading ? 0.6 : 1.0)
                             .padding(.horizontal, 20)
                             
                             Spacer()
@@ -109,6 +121,7 @@ struct ContentView: View {
                             onBack: {
                                 showingResult = false
                                 rankingResult = nil
+                                netWorth = ""
                             }
                         )
                     }
@@ -118,40 +131,42 @@ struct ContentView: View {
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarItems(
                 leading: AppTitleView(baseSize: 20)
-                    .padding(.top, 12)
             )
-        }
-        .onAppear {
-            // 앱 시작 시 초기화
-        }
-        .onTapGesture {
-            // 배경 탭 시 키보드 내리기
-            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-        }
-        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
-            isKeyboardVisible = true
-        }
-        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
-            isKeyboardVisible = false
-        }
-        .safeAreaInset(edge: .bottom) {
-            if !isKeyboardVisible {
-                VStack(spacing: 4) {
+            .onTapGesture {
+                // 키보드 숨기기
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+            }
+            .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
+                isKeyboardVisible = true
+            }
+            .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+                isKeyboardVisible = false
+            }
+            .safeAreaInset(edge: .bottom) {
+                VStack(spacing: 0) {
                     SignatureView()
                     TestAdBannerPlaceholder()
-                        .frame(maxWidth: .infinity, maxHeight: 50)
-                        .padding(.horizontal)
-                        .padding(.bottom, 6)
                 }
             }
         }
     }
     
     private func checkRanking() {
-        guard let amount = Int(netWorth.replacingOccurrences(of: ",", with: "")), amount > 0 else {
+        // 이미 로딩 중이면 무시
+        guard !isLoading else {
             return
         }
         
+        // 입력값 정리 (공백, 쉼표 제거)
+        let cleanedInput = netWorth.replacingOccurrences(of: ",", with: "").replacingOccurrences(of: " ", with: "")
+        
+        guard let amount = Int(cleanedInput), amount > 0 else {
+            return
+        }
+        
+        // 상태 초기화
+        showingResult = false
+        rankingResult = nil
         isLoading = true
         
         // 한국은행 API 호출 및 랭킹 계산 (실제 데이터 사용)
@@ -161,9 +176,6 @@ struct ContentView: View {
                 if let result = result {
                     self.rankingResult = result
                     self.showingResult = true
-                } else {
-                    // API 실패 시 에러 메시지 표시
-                    print("자산 랭킹 계산 실패")
                 }
             }
         }

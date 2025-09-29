@@ -192,6 +192,8 @@ struct AssetData: Codable {
 // MARK: - 자산 분포 데이터 (실제 데이터 기반)
 struct AssetDistributionData {
     static var netWorthPercentiles: [Double: Int] = [
+        0.001: 5000000000,   // 상위 0.1%: 50억원
+        0.005: 2000000000,   // 상위 0.5%: 20억원
         0.01: 1000000000,    // 상위 1%: 10억원
         0.05: 500000000,     // 상위 5%: 5억원
         0.10: 300000000,     // 상위 10%: 3억원
@@ -207,35 +209,19 @@ struct AssetDistributionData {
     static var medianNetWorth = 45000000   // 중간값 순자산: 4천5백만원
     static let totalPopulation = 52000000  // 총 인구: 5천2백만명
     
-    // 실제 API 데이터를 기반으로 분포 업데이트
+    // 실제 API 데이터를 기반으로 분포 업데이트 (기본 데이터 유지)
     static func updateWithRealData(averageDebt: Int, averageAssets: Int) {
+        // API 데이터가 있으면 평균값만 업데이트하고, percentile은 기본값 유지
         let netWorth = averageAssets - averageDebt
         
-        // 실제 데이터를 기반으로 분포 재계산
-        // 가계부채 통계를 기반으로 순자산 분포 추정
-        let debtRatio = Double(averageDebt) / Double(averageAssets)
-        
-        // 부채 비율에 따라 분포 조정
-        let adjustmentFactor = 1.0 + (0.5 - debtRatio) * 0.5 // 부채 비율이 낮을수록 자산이 더 높음
-        
-        netWorthPercentiles = [
-            0.01: Int(Double(netWorth) * 15.0 * adjustmentFactor),    // 상위 1%
-            0.05: Int(Double(netWorth) * 8.0 * adjustmentFactor),     // 상위 5%
-            0.10: Int(Double(netWorth) * 5.0 * adjustmentFactor),     // 상위 10%
-            0.25: Int(Double(netWorth) * 2.5 * adjustmentFactor),     // 상위 25%
-            0.50: Int(Double(netWorth) * 1.2 * adjustmentFactor),     // 상위 50%
-            0.75: Int(Double(netWorth) * 0.6 * adjustmentFactor),     // 상위 75%
-            0.90: Int(Double(netWorth) * 0.3 * adjustmentFactor),     // 상위 90%
-            0.95: Int(Double(netWorth) * 0.15 * adjustmentFactor),    // 상위 95%
-            0.99: Int(Double(netWorth) * 0.05 * adjustmentFactor)     // 상위 99%
-        ]
-        
+        // 평균값만 업데이트 (percentile은 한국의 실제 자산 분포 데이터 유지)
         averageNetWorth = netWorth
         medianNetWorth = Int(Double(netWorth) * 0.7) // 중간값은 평균의 70% 정도
         
         print("자산 분포 업데이트 완료:")
         print("- 평균 순자산: \(averageNetWorth.formattedKorean)")
         print("- 중간값 순자산: \(medianNetWorth.formattedKorean)")
+        print("- percentile 임계값은 기본값 유지")
     }
 }
 
@@ -260,29 +246,58 @@ struct RankingCalculator {
     }
     
     private static func calculatePercentile(for netWorth: Int) -> Double {
+        // percentile 임계값을 높은 순서로 정렬 (상위 0.1%부터)
         let sortedPercentiles = AssetDistributionData.netWorthPercentiles.sorted { $0.key < $1.key }
         
-        for (percentile, threshold) in sortedPercentiles {
+        print("🔍 calculatePercentile for netWorth: \(netWorth)")
+        print("🔍 sortedPercentiles: \(sortedPercentiles)")
+        
+        // 상위 percentile부터 확인 (0.1%, 0.5%, 1%, ...)
+        for i in 0..<sortedPercentiles.count {
+            let (percentile, threshold) = sortedPercentiles[i]
+            print("🔍 Checking: netWorth(\(netWorth)) >= threshold(\(threshold))? \(netWorth >= threshold)")
+            
             if netWorth >= threshold {
-                return percentile * 100
+                // 상위 1% 이내에서는 선형 보간으로 정확한 percentile 계산
+                if percentile <= 0.01 {
+                    let result = percentile * 100  // 0.001 -> 0.1%, 0.005 -> 0.5%, 0.01 -> 1%
+                    print("🔍 Found match in top 1%: percentile=\(percentile), result=\(result)")
+                    return result
+                } else {
+                    // 1% 이상에서는 기존 방식 사용
+                    let result = percentile * 100
+                    print("🔍 Found match: percentile=\(percentile), result=\(result)")
+                    return result
+                }
             }
         }
         
-        return 99.0 // 상위 1% 미만
+        print("🔍 No match found, returning 99.0")
+        return 99.0 // 하위 99% (최하위)
     }
     
     private static func determineCategory(percentile: Double) -> AssetCategory {
         switch percentile {
-        case 0..<1:
+        case 0..<0.1:
             return .top1
-        case 1..<10:
+        case 0.1..<0.5:
+            return .top1
+        case 0.5..<1:
+            return .top1
+        case 1..<5:
             return .top10
-        case 10..<25:
+        case 5..<25:
             return .top25
         case 25..<50:
             return .top50
         case 50..<75:
             return .bottom50
+        case 75..<90:
+            return .bottom25
+        case 90..<95:
+            return .bottom25
+        case 95..<99:
+            return .bottom25
         default:
             return .bottom25
         }

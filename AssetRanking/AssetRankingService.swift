@@ -11,7 +11,7 @@ class AssetRankingService: ObservableObject {
     
     // MARK: - 자산 랭킹 조회
     func getRanking(for netWorth: Int, completion: @escaping (AssetRankingResult?) -> Void) {
-        fetchAssetData { [weak self] success in
+        fetchAssetData { success in
             if success {
                 let result = RankingCalculator.calculateRanking(for: netWorth)
                 completion(result)
@@ -116,45 +116,5 @@ class AssetRankingService: ObservableObject {
     func checkNetworkStatus() -> Bool {
         // 간단한 네트워크 상태 확인
         return true
-    }
-}
-
-// MARK: - API 에러 타입
-enum AssetRankingError: Error, LocalizedError {
-    case invalidURL
-    case noData
-    case decodingError
-    case networkError
-    case apiKeyInvalid
-    
-    var errorDescription: String? {
-        switch self {
-        case .invalidURL:
-            return "잘못된 URL입니다"
-        case .noData:
-            return "데이터를 받아올 수 없습니다"
-        case .decodingError:
-            return "데이터를 해석할 수 없습니다"
-        case .networkError:
-            return "네트워크 연결을 확인해주세요"
-        case .apiKeyInvalid:
-            return "API 키가 유효하지 않습니다"
-        }
-    }
-}
-
-// MARK: - 숫자 포맷팅 헬퍼
-extension Int {
-    var formattedWithCommas: String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        return formatter.string(from: NSNumber(value: self)) ?? "\(self)"
-    }
-    
-}
-
-extension Double {
-    var formattedPercent: String {
-        return String(format: "%.1f", self) + "%"
     }
 }

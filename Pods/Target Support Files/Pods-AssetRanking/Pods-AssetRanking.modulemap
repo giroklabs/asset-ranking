@@ -1,0 +1,6 @@
+framework module Pods_AssetRanking {
+  umbrella header "Pods-AssetRanking-umbrella.h"
+
+  export *
+  module * { export * }
+}

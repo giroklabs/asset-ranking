@@ -19,7 +19,10 @@ struct ResultView: View {
                     // 헤더
                     VStack(spacing: 16) {
                         HStack {
-                            BackButton(action: onBack)
+                            BackButton(action: {
+                                print("🔙 뒤로가기 버튼 클릭됨")
+                                onBack()
+                            })
                             Spacer()
                         }
                         .padding(.horizontal, 20)
@@ -40,26 +43,13 @@ struct ResultView: View {
                     // 메인 결과 카드
                     CardView(cornerRadius: 20, shadowRadius: 12) {
                         VStack(spacing: 24) {
-                            // 순위 배지
-                            VStack(spacing: 16) {
-                                RankBadge(
-                                    percentile: result.percentile,
-                                    showDescription: true
-                                )
-                                
-                                Text(result.description)
-                                    .font(AppTheme.getFont(size: 18, weight: .semibold))
-                                    .foregroundColor(.primary)
-                                    .multilineTextAlignment(.center)
-                            }
-                            
                             // 자산 금액
                             VStack(spacing: 8) {
                                 Text("순자산액")
                                     .font(AppTheme.getFont(size: 16, weight: .light))
                                     .foregroundColor(.secondary)
                                 
-                                Text("₩\(result.netWorth.formattedWithCommas)")
+                                Text("₩\(result.netWorth.formattedKorean)")
                                     .font(AppTheme.getFont(size: 32, weight: .bold))
                                     .foregroundColor(RankColorHelper.colorForRank(result.percentile))
                             }
@@ -71,17 +61,19 @@ struct ResultView: View {
                                         .font(AppTheme.getFont(size: 14, weight: .light))
                                         .foregroundColor(.secondary)
                                     Spacer()
-                                    Text("\(result.rank.formattedWithCommas)위")
+                                    Text("\(result.rank.formattedKorean)위")
                                         .font(AppTheme.getFont(size: 16, weight: .semibold))
                                         .foregroundColor(.primary)
                                 }
                                 
                                 HStack {
-                                    Text("상위 비율")
+                                    Text(result.percentile <= 50 ? "상위 비율" : "하위 비율")
                                         .font(AppTheme.getFont(size: 14, weight: .light))
                                         .foregroundColor(.secondary)
                                     Spacer()
-                                    Text(result.percentile.formattedPercent)
+                                    Text(result.percentile <= 50 ? 
+                                         "\(String(format: "%.2f", result.percentile))%" : 
+                                         "\(String(format: "%.2f", 100 - result.percentile))%")
                                         .font(AppTheme.getFont(size: 16, weight: .semibold))
                                         .foregroundColor(.primary)
                                 }
@@ -98,6 +90,15 @@ struct ResultView: View {
                     .offset(y: animationOffset)
                     .opacity(animationOpacity)
                     
+                    // 자산 순위 시각화
+                    AssetRankingVisualization(
+                        percentile: result.percentile,
+                        netWorth: result.netWorth
+                    )
+                    .padding(.horizontal, 20)
+                    .offset(y: animationOffset + 10)
+                    .opacity(animationOpacity * 0.9)
+                    
                     // 상세 통계 카드들
                     LazyVGrid(columns: [
                         GridItem(.flexible()),
@@ -105,14 +106,14 @@ struct ResultView: View {
                     ], spacing: 16) {
                         ResultCard(
                             title: "평균 순자산",
-                            value: "₩\(result.averageNetWorth.formattedWithCommas)",
+                            value: "₩\(result.averageNetWorth.formattedKorean)",
                             subtitle: "전국 평균",
                             color: .blue
                         )
                         
                         ResultCard(
                             title: "중간값 순자산",
-                            value: "₩\(result.medianNetWorth.formattedWithCommas)",
+                            value: "₩\(result.medianNetWorth.formattedKorean)",
                             subtitle: "전국 중간값",
                             color: .green
                         )
@@ -136,11 +137,11 @@ struct ResultView: View {
                                 Divider()
                                 
                                 VStack(alignment: .leading, spacing: 8) {
-                                    Text("• 전국 \(result.totalPopulation.formattedWithCommas)명 중 \(result.rank.formattedWithCommas)위")
+                                    Text("• 전국 \(result.totalPopulation.formattedKorean)명 중 \(result.rank.formattedKorean)위")
                                         .font(AppTheme.getFont(size: 14, weight: .light))
                                         .foregroundColor(.secondary)
                                     
-                                    Text("• 상위 \(result.percentile.formattedPercent)에 해당")
+                                    Text("• 상위 \(String(format: "%.2f", result.percentile))%에 해당")
                                         .font(AppTheme.getFont(size: 14, weight: .light))
                                         .foregroundColor(.secondary)
                                     
@@ -198,9 +199,9 @@ struct ResultView: View {
         let shareText = """
         💰 자산랭킹 결과
         
-        순자산액: ₩\(result.netWorth.formattedWithCommas)
-        전국 순위: \(result.rank.formattedWithCommas)위
-        상위 비율: \(result.percentile.formattedPercent)
+        순자산액: ₩\(result.netWorth.formattedKorean)
+        전국 순위: \(result.rank.formattedKorean)위
+        상위 비율: \(String(format: "%.1f", result.percentile))%
         자산 그룹: \(result.category.rawValue)
         
         \(result.description)

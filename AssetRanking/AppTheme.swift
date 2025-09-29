@@ -61,51 +61,7 @@ struct AppTheme {
     static let smallPadding: CGFloat = 12
     static let largePadding: CGFloat = 24
     
-    // 폰트 설정 - MaruBuri OTF Regular 사용
-    static let appFont: Font = {
-        if let customFont = UIFont(name: "MaruBuriOTF Regular", size: 16) {
-            return Font(customFont)
-        }
-        return .system(size: 16)
-    }()
-    
-    static let appBoldFont: Font = {
-        if let customFont = UIFont(name: "MaruBuriOTF Regular", size: 16) {
-            return Font(customFont)
-        }
-        return .system(size: 16, weight: .bold)
-    }()
-    
-    // 폰트 크기 (MaruBuriOTF Regular 타입 체계)
-    static let titleFont: Font = {
-        if let customFont = UIFont(name: "MaruBuriOTF Regular", size: 22) {
-            return Font(customFont)
-        }
-        return .system(size: 22, weight: .bold)
-    }()
-    
-    static let headlineFont: Font = {
-        if let customFont = UIFont(name: "MaruBuriOTF Regular", size: 18) {
-            return Font(customFont)
-        }
-        return .system(size: 18, weight: .semibold)
-    }()
-    
-    static let bodyFont: Font = {
-        if let customFont = UIFont(name: "MaruBuriOTF Regular", size: 16) {
-            return Font(customFont)
-        }
-        return .system(size: 16)
-    }()
-    
-    static let captionFont: Font = {
-        if let customFont = UIFont(name: "MaruBuriOTF Regular", size: 12) {
-            return Font(customFont)
-        }
-        return .system(size: 12)
-    }()
-    
-    // README 권장 헬퍼 함수
+    // README 권장 헬퍼 함수 (폰트 로딩 타이밍 문제 해결)
     static func maruBuriFont(size: CGFloat) -> Font {
         if let font = UIFont(name: "MaruBuriOTF Regular", size: size) {
             return Font(font)
@@ -113,9 +69,54 @@ struct AppTheme {
         return .system(size: size)
     }
     
+    // 폰트 설정 - 함수 방식으로 변경 (README 권장)
+    static func appFont(size: CGFloat = 16) -> Font {
+        return maruBuriFont(size: size)
+    }
+    
+    static func appBoldFont(size: CGFloat = 16) -> Font {
+        return maruBuriFont(size: size)
+    }
+    
+    // 폰트 크기 (MaruBuriOTF Regular 타입 체계)
+    static func titleFont(size: CGFloat = 22) -> Font {
+        return maruBuriFont(size: size)
+    }
+    
+    static func headlineFont(size: CGFloat = 18) -> Font {
+        return maruBuriFont(size: size)
+    }
+    
+    static func bodyFont(size: CGFloat = 16) -> Font {
+        return maruBuriFont(size: size)
+    }
+    
+    static func captionFont(size: CGFloat = 12) -> Font {
+        return maruBuriFont(size: size)
+    }
+    
     // 추가 폰트 스타일
     static func getFont(size: CGFloat, weight: Font.Weight = .regular) -> Font {
         return maruBuriFont(size: size)
+    }
+    
+    // 디버그 정보 (README 권장)
+    static func debugFontInfo() {
+        print("🔍 폰트 로딩 상태 확인:")
+        print("- MaruBuriOTF Regular 로딩 가능: \(UIFont(name: "MaruBuriOTF Regular", size: 16) != nil)")
+        
+        let availableFonts = UIFont.familyNames.filter { $0.contains("MaruBuri") }
+        print("- 사용 가능한 MaruBuri 폰트: \(availableFonts)")
+        
+        // 앱 번들에 폰트 파일 존재 여부 확인
+        let fontFiles = ["MaruBuri-Regular.otf", "MaruBuri-Regular.ttf"]
+        for fontFile in fontFiles {
+            if let path = Bundle.main.path(forResource: fontFile.replacingOccurrences(of: ".otf", with: "").replacingOccurrences(of: ".ttf", with: ""), ofType: fontFile.contains(".otf") ? "otf" : "ttf") {
+                print("- \(fontFile) 파일 존재: ✅")
+            } else {
+                print("- \(fontFile) 파일 존재: ❌")
+            }
+        }
     }
 }
 
