@@ -1,0 +1,42 @@
+name: Update Asset Distribution Data
+
+on:
+  schedule:
+    # 매일 오전 9시 (한국시간) 실행
+    - cron: '0 0 * * *'
+  workflow_dispatch: # 수동 실행 가능
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    
+    - name: Install dependencies
+      run: |
+        pip install requests
+    
+    - name: Fetch data from Bank of Korea API
+      run: |
+        python scripts/fetch_bok_data.py
+    
+    - name: Process and update data
+      run: |
+        python scripts/process_asset_data.py
+    
+    - name: Commit and push changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add data/asset-distribution.json
+        git diff --staged --quiet || git commit -m "Update asset distribution data - $(date)"
+        git push

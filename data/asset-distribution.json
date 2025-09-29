@@ -1,0 +1,50 @@
+{
+  "lastUpdated": "2024-12-29",
+  "dataSource": "한국은행 ECOS API",
+  "version": "1.0.0",
+  "statistics": {
+    "totalPopulation": 52000000,
+    "averageNetWorth": 65000000,
+    "medianNetWorth": 45000000,
+    "averageDebt": 45000000,
+    "averageAssets": 180000000
+  },
+  "percentiles": {
+    "0.01": 1000000000,
+    "0.05": 500000000,
+    "0.10": 300000000,
+    "0.25": 150000000,
+    "0.50": 80000000,
+    "0.75": 40000000,
+    "0.90": 20000000,
+    "0.95": 10000000,
+    "0.99": 5000000
+  },
+  "monthlyData": [
+    {
+      "date": "2024-12",
+      "averageDebt": 45000000,
+      "averageAssets": 180000000,
+      "netWorth": 135000000,
+      "debtRatio": 0.25
+    },
+    {
+      "date": "2024-11",
+      "averageDebt": 44800000,
+      "averageAssets": 179000000,
+      "netWorth": 134200000,
+      "debtRatio": 0.25
+    },
+    {
+      "date": "2024-10",
+      "averageDebt": 44600000,
+      "averageAssets": 178000000,
+      "netWorth": 133400000,
+      "debtRatio": 0.25
+    }
+  ],
+  "fallback": {
+    "enabled": true,
+    "message": "GitHub 데이터 로드 실패 시 한국은행 API 사용"
+  }
+}
