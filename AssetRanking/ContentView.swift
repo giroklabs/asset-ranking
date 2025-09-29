@@ -36,57 +36,107 @@ struct ContentView: View {
                             Spacer()
                             
                             // 앱 타이틀
-                            VStack(spacing: 16) {
-                                Text("나의 자산 순위를 확인해보세요")
-                                    .font(AppTheme.getFont(size: 18, weight: .light))
+                            VStack(spacing: 20) {
+                                VStack(spacing: 8) {
+                                    Text("나의 자산 순위를")
+                                        .font(AppTheme.getFont(size: 20, weight: .light))
+                                        .foregroundColor(.primary.opacity(0.8))
+                                    
+                                    Text("확인해보세요")
+                                        .font(AppTheme.getFont(size: 20, weight: .semibold))
+                                        .foregroundColor(.primary)
+                                }
+                                
+                                Text("실시간 한국은행 데이터 기반")
+                                    .font(AppTheme.getFont(size: 12, weight: .light))
                                     .foregroundColor(.secondary)
-                                    .multilineTextAlignment(.center)
+                                    .opacity(0.7)
                             }
                             
                             // 자산 입력 카드
-                            CardView(cornerRadius: 16, shadowRadius: 8) {
-                                VStack(spacing: 24) {
-                                    VStack(alignment: .leading, spacing: 12) {
-                                        Text("순자산액 입력")
-                                            .font(AppTheme.getFont(size: 20, weight: .semibold))
-                                            .foregroundColor(.primary)
+                            CardView(cornerRadius: 20, shadowRadius: 12) {
+                                VStack(spacing: 28) {
+                                    VStack(alignment: .leading, spacing: 16) {
+                                        HStack(spacing: 12) {
+                                            Image(systemName: "chart.line.uptrend.xyaxis")
+                                                .font(.system(size: 18, weight: .medium))
+                                                .foregroundColor(AppTheme.primary)
+                                            
+                                            Text("순자산액 입력")
+                                                .font(AppTheme.getFont(size: 20, weight: .semibold))
+                                                .foregroundColor(.primary)
+                                        }
                                         
                                         Text("총 자산에서 부채를 뺀 순자산액을 입력해주세요")
                                             .font(AppTheme.getFont(size: 14, weight: .light))
                                             .foregroundColor(.secondary)
+                                            .lineLimit(2)
                                     }
                                     
-                                    VStack(spacing: 16) {
+                                    VStack(spacing: 20) {
                                         HStack {
                                             Text("₩")
-                                                .font(AppTheme.getFont(size: 24, weight: .bold))
-                                                .foregroundColor(.primary)
+                                                .font(AppTheme.getFont(size: 28, weight: .bold))
+                                                .foregroundColor(AppTheme.primary)
+                                                .padding(.leading, 4)
                                             
                                             TextField("0", text: $netWorth)
-                                                .font(AppTheme.getFont(size: 24, weight: .bold))
+                                                .font(AppTheme.getFont(size: 28, weight: .bold))
                                                 .keyboardType(.numberPad)
                                                 .multilineTextAlignment(.trailing)
                                                 .textFieldStyle(PlainTextFieldStyle())
+                                                .foregroundColor(AppTheme.primary)
                                         }
-                                        .padding(.horizontal, 20)
-                                        .padding(.vertical, 16)
+                                        .padding(.horizontal, 24)
+                                        .padding(.vertical, 20)
                                         .background(
-                                            RoundedRectangle(cornerRadius: 12)
-                                                .fill(Color(.systemGray6))
+                                            RoundedRectangle(cornerRadius: 16)
+                                                .fill(
+                                                    LinearGradient(
+                                                        gradient: Gradient(colors: [
+                                                            Color(.systemGray6),
+                                                            Color(.systemGray5)
+                                                        ]),
+                                                        startPoint: .topLeading,
+                                                        endPoint: .bottomTrailing
+                                                    )
+                                                )
                                         )
                                         .overlay(
-                                            RoundedRectangle(cornerRadius: 12)
-                                                .stroke(Color(.systemGray4), lineWidth: 0.5)
+                                            RoundedRectangle(cornerRadius: 16)
+                                                .stroke(
+                                                    LinearGradient(
+                                                        gradient: Gradient(colors: [
+                                                            AppTheme.primary.opacity(0.3),
+                                                            AppTheme.primary.opacity(0.1)
+                                                        ]),
+                                                        startPoint: .leading,
+                                                        endPoint: .trailing
+                                                    ),
+                                                    lineWidth: 1.5
+                                                )
                                         )
                                         
                                         // 한국어 단위 변환 표시
                                         if !netWorth.isEmpty {
                                             HStack {
                                                 Spacer()
-                                                Text(formattedKoreanAmount)
-                                                    .font(AppTheme.getFont(size: 16, weight: .medium))
-                                                    .foregroundColor(.blue)
-                                                    .padding(.top, 8)
+                                                HStack(spacing: 6) {
+                                                    Image(systemName: "checkmark.circle.fill")
+                                                        .font(.system(size: 12, weight: .medium))
+                                                        .foregroundColor(AppTheme.success)
+                                                    
+                                                    Text(formattedKoreanAmount)
+                                                        .font(AppTheme.getFont(size: 16, weight: .semibold))
+                                                        .foregroundColor(AppTheme.success)
+                                                }
+                                                .padding(.horizontal, 12)
+                                                .padding(.vertical, 6)
+                                                .background(
+                                                    RoundedRectangle(cornerRadius: 12)
+                                                        .fill(AppTheme.success.opacity(0.1))
+                                                )
+                                                .padding(.top, 8)
                                             }
                                         }
                                     }
@@ -95,22 +145,50 @@ struct ContentView: View {
                             .padding(.horizontal, 20)
                             
                             // 확인 버튼
-                            Button(action: {
-                                if netWorth.isEmpty {
-                                    return
-                                }
-                                checkRanking()
-                            }) {
-                                Text("순위 확인하기")
-                                    .font(AppTheme.getFont(size: 18, weight: .semibold))
+                            VStack(spacing: 16) {
+                                Button(action: {
+                                    if netWorth.isEmpty {
+                                        return
+                                    }
+                                    checkRanking()
+                                }) {
+                                    HStack(spacing: 8) {
+                                        if isLoading {
+                                            ProgressView()
+                                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                                .scaleEffect(0.8)
+                                        } else {
+                                            Image(systemName: "magnifyingglass")
+                                                .font(.system(size: 16, weight: .medium))
+                                        }
+                                        
+                                        Text(isLoading ? "분석 중..." : "순위 확인하기")
+                                            .font(AppTheme.getFont(size: 18, weight: .semibold))
+                                    }
                                     .foregroundColor(.white)
                                     .frame(maxWidth: .infinity)
                                     .frame(height: 56)
-                                    .background(AppTheme.primaryGradient)
-                                    .cornerRadius(AppTheme.cornerRadius)
+                                    .background(
+                                        LinearGradient(
+                                            gradient: Gradient(colors: [AppTheme.primary, AppTheme.primary.opacity(0.8)]),
+                                            startPoint: .leading,
+                                            endPoint: .trailing
+                                        )
+                                    )
+                                    .cornerRadius(28)
+                                    .shadow(color: AppTheme.primary.opacity(0.3), radius: 8, x: 0, y: 4)
+                                }
+                                .disabled(isLoading || netWorth.isEmpty)
+                                .opacity((isLoading || netWorth.isEmpty) ? 0.6 : 1.0)
+                                .scaleEffect(isLoading ? 0.98 : 1.0)
+                                .animation(.easeInOut(duration: 0.1), value: isLoading)
+                                
+                                // 하단 안내 텍스트
+                                Text("실시간 한국은행 데이터 기반")
+                                    .font(AppTheme.getFont(size: 12, weight: .light))
+                                    .foregroundColor(.secondary)
+                                    .opacity(0.7)
                             }
-                            .disabled(isLoading)
-                            .opacity(isLoading ? 0.6 : 1.0)
                             .padding(.horizontal, 20)
                             
                             Spacer()
