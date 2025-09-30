@@ -38,25 +38,26 @@ struct ContentView: View {
                     if !showingResult {
                         VStack(spacing: 0) {
                             // 고정 영역
-                            VStack(spacing: 32) {
+                            VStack(spacing: 16) {
                                 Spacer()
                                     .frame(height: 20)
                                 
                                 // 앱 타이틀
-                            VStack(spacing: 16) {
+                            VStack(spacing: 8) {
+                                Text("한국은행 가계부채 및 자산통계 베이스")
+                                    .font(AppTheme.getFont(size: 14, weight: .light))
+                                    .foregroundColor(.secondary)
+                                    .opacity(0.8)
+                                    .padding(.bottom, 4)
+                                
                                 Text("나의 자산 순위를 확인해보세요")
                                     .font(AppTheme.getFont(size: 24, weight: .bold))
                                     .foregroundColor(.primary)
                                     .multilineTextAlignment(.center)
-                                
-                                Text("실시간 한국은행 데이터 기반")
-                                    .font(AppTheme.getFont(size: 14, weight: .light))
-                                    .foregroundColor(.secondary)
-                                    .opacity(0.8)
                             }
                             
                             // 자산 입력 섹션
-                            VStack(spacing: 20) {
+                            VStack(spacing: 10) {
                                 VStack(alignment: .leading, spacing: 8) {
                                     Text("순자산액 입력")
                                         .font(AppTheme.getFont(size: 16, weight: .semibold))
@@ -84,7 +85,7 @@ struct ContentView: View {
                                             .foregroundColor(.primary)
                                     }
                                     .frame(maxWidth: .infinity)
-                                    .frame(height: 56)
+                                    .frame(height: 40)
                                     .padding(.horizontal, 20)
                                     .background(
                                         RoundedRectangle(cornerRadius: 12)
@@ -127,7 +128,7 @@ struct ContentView: View {
                                 }
                                 .foregroundColor(.white)
                                 .frame(maxWidth: .infinity)
-                                .frame(height: 56)
+                                .frame(height: 40)
                                 .background(
                                     LinearGradient(
                                         gradient: Gradient(colors: [
@@ -166,7 +167,7 @@ struct ContentView: View {
                                         }
                                     }
                                     .padding(.horizontal, 20)
-                                    .padding(.top, 24)
+                                    .padding(.top, 40)
                                     .padding(.bottom, 12)
                                     
                                     ScrollView {
@@ -208,8 +209,9 @@ struct ContentView: View {
                                             }
                                         }
                                         .padding(.horizontal, 20)
-                                        .padding(.bottom, 20)
+                                        .padding(.bottom, 150)  // 배너광고 높이만큼 여유 확보
                                     }
+                                    .frame(maxHeight: 250)  // 최대 높이 제한으로 배너 가림 방지
                                 }
                             } else {
                                 Spacer()

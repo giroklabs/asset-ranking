@@ -49,9 +49,6 @@ struct AppTitleView: View {
     var baseSize: CGFloat = 20
     var body: some View {
         HStack(spacing: 2) {
-            Text("💰")
-                .font(.system(size: baseSize, weight: .semibold))
-                .accessibilityHidden(true)
             GradientText(
                 text: "자산랭킹",
                 font: AppTheme.getFont(size: baseSize, weight: .bold),

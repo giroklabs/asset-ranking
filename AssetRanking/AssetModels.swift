@@ -297,8 +297,8 @@ struct RankingCalculator {
     }
     
     private static func calculatePercentile(for netWorth: Int) -> Double {
-        // percentile 임계값을 오름차순으로 정렬 (상위 0.001%부터)
-        let sortedPercentiles = AssetDistributionData.netWorthPercentiles.sorted { $0.key < $1.key }
+        // percentile 임계값을 자산액 기준 내림차순으로 정렬 (큰 자산부터)
+        let sortedPercentiles = AssetDistributionData.netWorthPercentiles.sorted { $0.value > $1.value }
         
         print("🔍 calculatePercentile for netWorth: \(netWorth)")
         
@@ -312,17 +312,20 @@ struct RankingCalculator {
             return result
         }
         
-        // 두 임계값 사이에서 선형 보간
+        // 두 임계값 사이에서 선형 보간 (내림차순 정렬: 큰 자산 → 작은 자산)
         for i in 0..<sortedPercentiles.count - 1 {
-            let (lowerPercentile, lowerThreshold) = sortedPercentiles[i]
-            let (higherPercentile, higherThreshold) = sortedPercentiles[i + 1]
+            let (upperPercentile, upperThreshold) = sortedPercentiles[i]      // 더 높은 자산 (더 낮은 percentile)
+            let (lowerPercentile, lowerThreshold) = sortedPercentiles[i + 1]  // 더 낮은 자산 (더 높은 percentile)
+            
+            print("🔍 Checking range: \(upperThreshold) > \(netWorth) >= \(lowerThreshold)")
             
             // netWorth가 두 임계값 사이에 있으면 선형 보간
-            if netWorth >= lowerThreshold && netWorth < higherThreshold {
-                let ratio = Double(netWorth - lowerThreshold) / Double(higherThreshold - lowerThreshold)
-                let interpolatedPercentile = lowerPercentile + (higherPercentile - lowerPercentile) * ratio
+            // 예: 50억 > 40억 >= 20억
+            if netWorth < upperThreshold && netWorth >= lowerThreshold {
+                let ratio = Double(netWorth - lowerThreshold) / Double(upperThreshold - lowerThreshold)
+                let interpolatedPercentile = lowerPercentile + (upperPercentile - lowerPercentile) * ratio
                 let result = interpolatedPercentile * 100
-                print("🔍 Interpolated between \(lowerPercentile) and \(higherPercentile): result=\(result)%")
+                print("🔍 ✅ Interpolated between upper(\(upperPercentile)*100=\(upperPercentile*100)%) and lower(\(lowerPercentile)*100=\(lowerPercentile*100)%): result=\(result)%")
                 return result
             }
         }
@@ -368,9 +371,14 @@ struct RankingCalculator {
     }
     
     private static func calculateRank(percentile: Double) -> Int {
-        // percentile을 기반으로 더 정확한 순위 계산
+        // percentile을 기반으로 정확한 순위 계산
         // percentile이 낮을수록 상위권 (1위에 가까움)
-        let rank = Int(percentile * Double(AssetDistributionData.totalPopulation) / 100)
+        
+        // 상위 percentile%에 해당하는 사람 수
+        let peopleAbove = percentile * Double(AssetDistributionData.totalPopulation) / 100
+        
+        // 순위는 그 사람들의 중간값 (예: 상위 0.10% = 52,000명이면 약 26,000위)
+        let rank = Int(peopleAbove / 2)
         
         // 최소 1위부터 시작
         return max(1, rank)
