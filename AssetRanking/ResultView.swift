@@ -8,6 +8,14 @@ struct ResultView: View {
     @State private var animationOffset: CGFloat = 50
     @State private var animationOpacity: Double = 0
     
+    // 숫자를 쉼표로 포맷팅 (순위용)
+    private func formatNumber(_ number: Int) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.groupingSeparator = ","
+        return formatter.string(from: NSNumber(value: number)) ?? "\(number)"
+    }
+    
     var body: some View {
         ZStack(alignment: .top) {
             // 배경 그라데이션
@@ -61,7 +69,7 @@ struct ResultView: View {
                                         .font(AppTheme.getFont(size: 14, weight: .light))
                                         .foregroundColor(.secondary)
                                     Spacer()
-                                    Text("\(result.rank.formattedKorean)위")
+                                    Text("\(formatNumber(result.rank))위")
                                         .font(AppTheme.getFont(size: 16, weight: .semibold))
                                         .foregroundColor(.primary)
                                 }

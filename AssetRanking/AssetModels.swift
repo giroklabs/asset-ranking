@@ -42,6 +42,57 @@ struct AssetRankingResult: Codable {
     let comparison: String
 }
 
+// MARK: - 검색 히스토리 모델
+struct SearchHistory: Codable, Identifiable {
+    let id: UUID
+    let netWorth: Int
+    let percentile: Double
+    let date: Date
+    
+    init(netWorth: Int, percentile: Double, date: Date = Date()) {
+        self.id = UUID()
+        self.netWorth = netWorth
+        self.percentile = percentile
+        self.date = date
+    }
+}
+
+// MARK: - 히스토리 매니저
+class HistoryManager {
+    static let shared = HistoryManager()
+    private let maxHistoryCount = 5
+    private let userDefaultsKey = "searchHistory"
+    
+    private init() {}
+    
+    func saveHistory(netWorth: Int, percentile: Double) {
+        var history = getHistory()
+        let newEntry = SearchHistory(netWorth: netWorth, percentile: percentile)
+        history.insert(newEntry, at: 0)
+        
+        // 최대 5개까지만 저장
+        if history.count > maxHistoryCount {
+            history = Array(history.prefix(maxHistoryCount))
+        }
+        
+        if let encoded = try? JSONEncoder().encode(history) {
+            UserDefaults.standard.set(encoded, forKey: userDefaultsKey)
+        }
+    }
+    
+    func getHistory() -> [SearchHistory] {
+        guard let data = UserDefaults.standard.data(forKey: userDefaultsKey),
+              let history = try? JSONDecoder().decode([SearchHistory].self, from: data) else {
+            return []
+        }
+        return history
+    }
+    
+    func clearHistory() {
+        UserDefaults.standard.removeObject(forKey: userDefaultsKey)
+    }
+}
+
 // MARK: - 자산 카테고리
 enum AssetCategory: String, CaseIterable, Codable {
     case top1 = "상위 1%"
@@ -246,34 +297,47 @@ struct RankingCalculator {
     }
     
     private static func calculatePercentile(for netWorth: Int) -> Double {
-        // percentile 임계값을 높은 순서로 정렬 (상위 0.1%부터)
+        // percentile 임계값을 오름차순으로 정렬 (상위 0.001%부터)
         let sortedPercentiles = AssetDistributionData.netWorthPercentiles.sorted { $0.key < $1.key }
         
         print("🔍 calculatePercentile for netWorth: \(netWorth)")
-        print("🔍 sortedPercentiles: \(sortedPercentiles)")
         
-        // 상위 percentile부터 확인 (0.1%, 0.5%, 1%, ...)
-        for i in 0..<sortedPercentiles.count {
-            let (percentile, threshold) = sortedPercentiles[i]
-            print("🔍 Checking: netWorth(\(netWorth)) >= threshold(\(threshold))? \(netWorth >= threshold)")
+        // 최고 자산보다 높으면 최상위 (0.001%)
+        if netWorth >= sortedPercentiles.first!.value {
+            // 최상위 임계값보다 높으면 선형 보간으로 더 정확하게
+            let topThreshold = sortedPercentiles.first!.value
+            let extraRatio = min(Double(netWorth) / Double(topThreshold), 10.0) // 최대 10배까지
+            let result = 0.001 / extraRatio * 100  // 예: 2배면 0.0005%
+            print("🔍 Above top threshold: result=\(result)%")
+            return result
+        }
+        
+        // 두 임계값 사이에서 선형 보간
+        for i in 0..<sortedPercentiles.count - 1 {
+            let (lowerPercentile, lowerThreshold) = sortedPercentiles[i]
+            let (higherPercentile, higherThreshold) = sortedPercentiles[i + 1]
             
-            if netWorth >= threshold {
-                // 상위 1% 이내에서는 선형 보간으로 정확한 percentile 계산
-                if percentile <= 0.01 {
-                    let result = percentile * 100  // 0.001 -> 0.1%, 0.005 -> 0.5%, 0.01 -> 1%
-                    print("🔍 Found match in top 1%: percentile=\(percentile), result=\(result)")
-                    return result
-                } else {
-                    // 1% 이상에서는 기존 방식 사용
-                    let result = percentile * 100
-                    print("🔍 Found match: percentile=\(percentile), result=\(result)")
-                    return result
-                }
+            // netWorth가 두 임계값 사이에 있으면 선형 보간
+            if netWorth >= lowerThreshold && netWorth < higherThreshold {
+                let ratio = Double(netWorth - lowerThreshold) / Double(higherThreshold - lowerThreshold)
+                let interpolatedPercentile = lowerPercentile + (higherPercentile - lowerPercentile) * ratio
+                let result = interpolatedPercentile * 100
+                print("🔍 Interpolated between \(lowerPercentile) and \(higherPercentile): result=\(result)%")
+                return result
             }
         }
         
-        print("🔍 No match found, returning 99.0")
-        return 99.0 // 하위 99% (최하위)
+        // 최하위 임계값보다 낮으면
+        let lowestThreshold = sortedPercentiles.last!.value
+        if netWorth < lowestThreshold {
+            // 최하위보다 낮으면 99% 이상
+            let result = 99.0 + (1.0 - Double(netWorth) / Double(lowestThreshold)) * 0.9 // 99.0 ~ 99.9%
+            print("🔍 Below lowest threshold: result=\(result)%")
+            return min(result, 99.9)
+        }
+        
+        print("🔍 Edge case, returning 99.0")
+        return 99.0
     }
     
     private static func determineCategory(percentile: Double) -> AssetCategory {
@@ -304,7 +368,12 @@ struct RankingCalculator {
     }
     
     private static func calculateRank(percentile: Double) -> Int {
-        return Int((100 - percentile) * Double(AssetDistributionData.totalPopulation) / 100)
+        // percentile을 기반으로 더 정확한 순위 계산
+        // percentile이 낮을수록 상위권 (1위에 가까움)
+        let rank = Int(percentile * Double(AssetDistributionData.totalPopulation) / 100)
+        
+        // 최소 1위부터 시작
+        return max(1, rank)
     }
     
     private static func generateComparison(netWorth: Int, percentile: Double) -> String {

@@ -299,7 +299,6 @@ struct AssetRankingVisualization: View {
         VStack(spacing: 0) {
             penthouseFloor
             floorsSection
-            groundFloor
         }
         .background(
             RoundedRectangle(cornerRadius: 8)
@@ -331,7 +330,7 @@ struct AssetRankingVisualization: View {
     
     private var userPositionIndicatorForPenthouse: some View {
         Group {
-            if percentile >= 99 {
+            if userFloorNumber == -1 {
                 Circle()
                     .fill(Color.blue)
                     .frame(width: 16, height: 16)
@@ -396,6 +395,21 @@ struct AssetRankingVisualization: View {
                     .font(.system(size: 10, weight: .bold))
                     .foregroundColor(.white)
             )
+            .overlay(
+                Group {
+                    if userFloorNumber == 7 {
+                        Circle()
+                            .fill(Color.blue)
+                            .frame(width: 16, height: 16)
+                            .overlay(
+                                Text("나")
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundColor(.white)
+                            )
+                            .offset(x: 35)
+                    }
+                }
+            )
     }
     
     private var rankingScale: some View {
@@ -405,7 +419,7 @@ struct AssetRankingVisualization: View {
             floor7Ranking
             floor6Ranking
             floor4Ranking
-            groundRanking
+            floor1Ranking
         }
         .padding(.leading, 8)
     }
@@ -475,13 +489,13 @@ struct AssetRankingVisualization: View {
         .opacity(percentile >= 50 ? 1.0 : 0.3)
     }
     
-    private var groundRanking: some View {
+    private var floor1Ranking: some View {
         HStack {
             Text("하위 50%")
                 .font(AppTheme.getFont(size: 12, weight: .semibold))
                 .foregroundColor(.purple)
             Spacer()
-            Text("상가 5천만원")
+            Text("1층 5천만원")
                 .font(AppTheme.getFont(size: 12, weight: .medium))
                 .foregroundColor(.primary)
         }
@@ -490,24 +504,24 @@ struct AssetRankingVisualization: View {
     
     private var floorName: String {
         switch percentile {
-        case 99...100:
+        case 0..<1:
             return "팬트하우스"
-        case 95..<99:
+        case 1..<5:
             return "8층"
-        case 90..<95:
+        case 5..<10:
             return "7층"
-        case 80..<90:
+        case 10..<25:
             return "6층"
-        case 70..<80:
-            return "5층"
-        case 60..<70:
-            return "4층"
-        case 50..<60:
-            return "3층"
         case 25..<50:
+            return "5층"
+        case 50..<75:
+            return "4층"
+        case 75..<87.5:
+            return "3층"
+        case 87.5..<93.75:
             return "2층"
         default:
-            return "상가"
+            return "1층"
         }
     }
     
@@ -538,12 +552,12 @@ struct AssetRankingVisualization: View {
             return 3  // 5층 (상위 50%) - floor 3 = 5층
         case 50..<75:
             return 4  // 4층 (상위 75%) - floor 4 = 4층
-        case 75..<90:
-            return 5  // 3층 (상위 90%) - floor 5 = 3층
-        case 90..<95:
-            return 6  // 2층 (상위 95%) - floor 6 = 2층
+        case 75..<87.5:
+            return 5  // 3층 (상위 87.5%) - floor 5 = 3층
+        case 87.5..<93.75:
+            return 6  // 2층 (상위 93.75%) - floor 6 = 2층
         default:
-            return 7  // 1층/상가 (하위 95%) - floor 7 = 1층
+            return 7  // 1층 (하위 93.75%) - floor 7 = 1층
         }
     }
     
